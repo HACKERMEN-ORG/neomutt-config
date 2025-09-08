@@ -236,7 +236,6 @@ bind index,pager i sidebar-open
 macro index <f2> '<sync-mailbox><enter-command>source ~/.config/neomutt/me<enter><change-folder>!<enter>'
 macro index <f3> '<sync-mailbox><enter-command>source ~/.config/neomutt/gmail<enter><change-folder>!<enter>'
 
-macro index N "T~U<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "mark all messages as read"
 macro index O "<shell-escape>mbsync me<enter>" "run mbsync"
 macro index A "<limit>all\n" "show all messages (undo limit)"
 
