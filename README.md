@@ -36,7 +36,7 @@ Neomutt defaults have legacy lock-in issues.
 ## Good alias to do background mail stuff when opening the client
 
 ```sh
-alias dog="sh -c 'mbsync me 1>&/dev/null && notmuch new 1>&/dev/null'  & neomutt"
+alias dog="sh -c 'mbsync me 2>&1 >/dev/null && notmuch new 2>&1 >/dev/null'  & neomutt"
 ```
 
 ## TODO
