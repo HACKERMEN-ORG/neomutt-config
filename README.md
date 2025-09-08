@@ -22,7 +22,9 @@ Neomutt defaults have legacy lock-in issues.
 - A million default setting changes that don't do much
 - signature
 
-## Non-features
+## The Subjective User Experience
+
+Like this: [Orwell's tea](http://www.booksatoz.com/witsend/tea/orwell.htm)
 
 ## Install
 - clone to ~/.config/neomutt
