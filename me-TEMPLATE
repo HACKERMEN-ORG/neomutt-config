@@ -1,0 +1,22 @@
+set from=<++>@<++>
+set realname="<++>"
+set hostname="<++>"
+set folder="~/mail/me/"
+set mbox_type=Maildir
+set postponed="=Drafts"
+set spoolfile=+/INBOX
+# could do this
+#set signature="~/.mutt/signature.example"
+#set smtp_url="smtp://me@mail.example.com" smtp_pass="$my_pw_example"
+# use sendmail instead
+set sendmail="/usr/bin/msmtp -a me"
+# common mailbox examples
+# add your own for your milter if needed
+mailboxes ! +INBOX \
+	     +Sent \
+       +Drafts \
+       +Archive \
+	     +Trash \
+	     +Spam \
+       +<++> \
+       +<++>

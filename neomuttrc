@@ -1,0 +1,259 @@
+# default account is sourced later as "me" at startup
+folder-hook 'equwal.com' 'source ~/.config/neomutt/me'
+# folder-hook 'other-mailbox' 'source ~/.config/neomutt/other-mailbox'
+
+# Vim-like navigation for first/last entry
+bind index g first-entry
+bind index G last-entry
+bind pager g top
+bind pager G bottom
+
+# Note: $folder should be set _before_ any other path vars where `+' or `='
+# is used because paths are expanded when parsed
+set debug_level = 2
+set debug_file = ~/.config/neomutt/neolog
+set folder="~/mail"
+set mbox_type=Maildir
+
+set alias_file=~/.config/neomutt/aliases
+set arrow_cursor
+set autoedit
+set noconfirmappend
+set copy=yes
+set delete=yes
+set edit_headers="yes"
+set editor="nvim"
+set help
+set include
+set nomark_old
+set mail_check=60		# avoid IMAP lags
+set mime_forward=yes
+set move=yes
+set pager_index_lines=6
+set postponed=+postponed
+set print_command=/bin/false	# save trees
+set noprompt_after
+set read_inc=25
+set record=+Sent
+set reply_to
+set reverse_name
+set nosave_empty
+set signature="~/.config/neomutt/sig"
+set sendmail="/usr/bin/msmtp"
+# I subscribe to a lot of mailing lists, so this is _very_ useful.  This
+# groups messages on the same subject to make it easier to follow a
+# discussion.  NeoMutt will draw a nice tree showing how the discussion flows.
+set sort='reverse-date'		# primary sorting method
+set sort_browser=reverse-date	# how to sort files in the dir browser
+set spoolfile=+/		# where my new mail is located
+set header_cache=~/.cache/mutt
+set tilde			# virtual lines to pad blank lines in the pager
+set timeout=5			# timeout for prompt in the index menu
+set nouse_domain		# don't qualify local addresses with $domain
+set implicit_autoview=yes	# pager shows parts having a mailcap viewer
+set write_inc=25		# show progress while writing mailboxes
+set abort_unmodified=yes	# automatically abort replies with no changes
+set abort_nosubject=yes		# automatically abort messages with no subject
+
+# PGP/GPG encryption settings
+set crypt_verify_sig=yes
+set crypt_use_gpgme=yes		# PGP encryption
+set crypt_auto_sign=yes		# sign messages by default
+set crypt_auto_encrypt=yes
+set crypt_auto_smime=yes
+set crypt_auto_pgp=yes
+set crypt_opportunistic_encrypt=yes
+set crypt_reply_encrypt=yes
+set crypt_reply_sign=yes
+set crypt_reply_sign_encrypted=yes
+
+# Mutt-wizard settings
+set mailcap_path = ~/.config/neomutt/mailcap
+set date_format="%y/%m/%d %I:%M%p"
+set index_format="%2C %Z %?X?A& ? %D %-15.15F %s (%-4.4c)"
+set query_command = "mail-alias --query '%s'"
+set rfc2047_parameters = yes
+set sleep_time = 0		# Pause 0 seconds for informational messages
+set markers = no		# Disables the `+` displayed at line wraps
+set mark_old = no		# Unread mail stay unread until read
+set wait_key = no		# mutt won't ask "press key to continue"
+set fast_reply			# skip to compose when replying
+set fcc_attach			# save attachments with the body
+set forward_format = "Fwd: %s"	# format of subject when forwarding
+set forward_quote		# include message in forwards
+
+# Header fields I don't normally want to see
+ignore *		# this means "ignore all lines by default"
+
+# I do want to see these fields, though!
+unignore	from: subject to cc mail-followup-to \
+		date x-mailer x-url # this shows how nicely wrap long lines
+
+# Color definitions
+color hdrdefault red default
+color quoted brightblue default
+color signature red default
+color indicator brightyellow red
+color error brightred default
+color status yellow blue
+color tree magenta default	# the thread tree in the index menu
+color tilde magenta default
+color message brightcyan default
+color markers brightcyan default
+color attachment brightmagenta default
+color search default green	# how to hilite search patterns in the pager
+color warning brightyellow default
+
+color header brightred default "^(From|Subject):"
+color body magenta default "(ftp|http|https)://[^ ]+"	# point out URLs
+color body magenta default "[-a-z_0-9.\+]+@[-a-z_0-9.]+"	# e-mail addresses
+color underline brightgreen default
+
+# attributes when using a mono terminal
+mono quoted bold
+
+# Default index colors:
+color index yellow default '.*'
+color index_author red default '.*'
+color index_number blue default
+color index_subject cyan default '.*'
+
+# New mail is boldened:
+color index brightyellow black "~N"
+color index_author brightred black "~N"
+color index_subject brightcyan black "~N"
+
+# Tagged mail is highlighted:
+color index brightyellow blue "~T"
+color index_author brightred blue "~T"
+color index_subject brightcyan blue "~T"
+
+# Other colors and aesthetic settings:
+mono bold bold
+mono underline underline
+mono indicator reverse
+mono error bold
+color normal default default
+color indicator brightblack white
+color sidebar_highlight red default
+color sidebar_divider brightblack black
+color sidebar_flagged red black
+color sidebar_new green black
+color normal brightyellow default
+color error red default
+color tilde black default
+color message cyan default
+color markers red white
+color attachment white default
+color search brightmagenta default
+color status brightyellow black
+color hdrdefault brightgreen default
+color quoted green default
+color quoted1 blue default
+color quoted2 cyan default
+color quoted3 yellow default
+color quoted4 red default
+color quoted5 brightred default
+color signature brightgreen default
+color bold black default
+color underline black default
+color normal default default
+
+# Regex highlighting:
+color header blue default ".*"
+color header brightmagenta default "^(From)"
+color header brightcyan default "^(Subject)"
+color header brightwhite default "^(CC|BCC)"
+color body brightred default "[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+" # Email addresses
+color body brightblue default "(https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+" # URL
+color body green default "\`[^\`]*\`" # Green text between ` and `
+color body brightblue default "^# \.*" # Headings as bold blue
+color body brightcyan default "^## \.*" # Subheadings as bold cyan
+color body brightgreen default "^### \.*" # Subsubheadings as bold green
+color body yellow default "^(\t| )*(-|\\*) \.*" # List items as yellow
+color body brightcyan default "[;:][-o][)/(|]" # emoticons
+color body brightcyan default "[;:][)(|]" # emoticons
+color body brightcyan default "[ ][*][^*]*[*][ ]?" # more emoticon?
+color body brightcyan default "[ ]?[*][^*]*[*][ ]" # more emoticon?
+color body red default "(BAD signature)"
+color body cyan default "(Good signature)"
+color body brightblack default "^gpg: Good signature .*"
+color body brightyellow default "^gpg: "
+color body brightyellow red "^gpg: BAD signature from.*"
+mono body bold "^gpg: Good signature"
+mono body bold "^gpg: BAD signature from.*"
+color body red default "([a-z][a-z0-9+-]*://(((([a-z0-9_.!~*'();:&=+$,-]|%[0-9a-f][0-9a-f])*@)?((([a-z0-9]([a-z0-9-]*[a-z0-9])?)\\.)*([a-z]([a-z0-9-]*[a-z0-9])?)\\.?|[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)(:[0-9]+)?)|([a-z0-9_.!~*'()$,;:@&=+-]|%[0-9a-f][0-9a-f])+)(/([a-z0-9_.!~*'():@&=+$,-]|%[0-9a-f][0-9a-f])*(;([a-z0-9_.!~*'():@&=+$,-]|%[0-9a-f][0-9a-f])*)*(/([a-z0-9_.!~*'():@&=+$,-]|%[0-9a-f][0-9a-f])*(;([a-z0-9_.!~*'():@&=+$,-]|%[0-9a-f][0-9a-f])*)*)*)?(\\?([a-z0-9_.!~*'());/?:@&=+$,-]|%[0-9a-f][0-9a-f])*)?(#([a-z0-9_.!~*'());/?:@&=+$,-]|%[0-9a-f][0-9a-f])*)?|(www|ftp)\\.(([a-z0-9]([a-z0-9-]*[a-z0-9])?)\\.)*([a-z]([a-z0-9-]*[a-z0-9])?)\\.?(:[0-9]+)?(/([-a-z0-9_.!~*'():@&=+$,]|%[0-9a-f][0-9a-f])*(;([-a-z0-9_.!~*'():@&=+$,]|%[0-9a-f][0-9a-f])*)*(/([-a-z0-9_.!~*'():@&=+$,]|%[0-9a-f][0-9a-f])*(;([-a-z0-9_.!~*'():@&=+$,]|%[0-9a-f][0-9a-f])*)*)*)?(\\?([-a-z0-9_.!~*'());/?:@&=+$,]|%[0-9a-f][0-9a-f])*)?(#([-a-z0-9_.!~*'());/?:@&=+$,]|%[0-9a-f][0-9a-f])*)?)[^].,:;!)? \t\r\n<>\"]"
+
+# Sidebar mappings
+set sidebar_visible = yes
+set sidebar_width = 20
+set sidebar_short_path = yes
+set sidebar_next_new_wrap = yes
+
+# Spam handling
+macro index,pager \; "<save-message>+Spam<Enter>"
+macro index,pager \: "<save-message>+INBOX<Enter>"
+
+bind pager G bottom	# just like vi and less
+
+# Custom key bindings for 'n' key
+bind index n display-message	# open current mail when in index view
+bind pager n next-page		# next page when reading a message
+
+# Custom key bindings for 'p' key  
+bind index p display-message	# open current mail when in index view
+macro pager p "<previous-page><top><previous-undeleted>" "previous page or previous message if at top"
+# Custom key binding for 'o' key
+bind pager o view-attachments	# view attachments when reading a message
+# Custom key binding for 'O' key
+macro pager O "<pipe-entry>cat > /tmp/neomutt-html && $BROWSER /tmp/neomutt-html<enter>" "open HTML message in browser"
+# Custom key binding for 'N' key
+macro index N "T.*<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "mark all messages as read"
+# Custom key binding for 'R' key  
+macro index,pager R group-reply "reply and quote message"
+# Custom key bindings for edit functions
+bind index,pager E edit			# move default edit to 'E' (index only)
+bind index,pager e resend-message		# edit message as template for new message (index only)
+# Custom key bindings for read/unread status
+bind index,pager r reply		# reply with dialogue to select reply type
+macro index,pager u "<clear-flag>N" "mark current message as read"
+macro index,pager U "<set-flag>N" "mark current message as unread"
+# Custom key binding for 'F' key
+bind index,pager F forward-message	# forward message
+
+# Custom key bindings for page navigation
+bind pager \Cf half-down		# Ctrl+f: page down without moving to next message
+bind pager \Cb half-up			# Ctrl+b: page up without moving to previous message
+
+# Sidebar key bindings
+bind index,pager h sidebar-prev
+bind index,pager l sidebar-next
+bind index,pager H sidebar-prev-new
+bind index,pager L sidebar-next-new
+bind index,pager i sidebar-open
+
+
+macro index <f2> '<sync-mailbox><enter-command>source ~/.config/neomutt/me<enter><change-folder>!<enter>'
+macro index <f3> '<sync-mailbox><enter-command>source ~/.config/neomutt/gmail<enter><change-folder>!<enter>'
+
+macro index N "T~U<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "mark all messages as read"
+macro index O "<shell-escape>mbsync me<enter>" "run mbsync"
+macro index A "<limit>all\n" "show all messages (undo limit)"
+
+# switch to default account on startup
+source ~/.config/neomutt/me
+source ~/.config/neomutt/arcane-config
+
+# Specify the order of the headers to appear when displaying a message
+unhdr_order *				# forget the previous settings
+hdr_order date from subject to cc
+
+# Identify mailing lists I subscribe to - lists <list-name> [ <list-name> ... ]
+lists ^mutt-dev@mutt\\.org$ ^mutt-users@mutt\\.org$
+
+# Automatically use entries from ~/.mailcap to view these MIME types - auto_view <type> [ <type> ... ]
+auto_view application/x-gunzip
+auto_view application/x-gzip
+auto_view text/html		# automatically show html (mailcap uses w3m)
+auto_view application/pgp-encrypted
+alternative_order text/plain text/enriched text/html
