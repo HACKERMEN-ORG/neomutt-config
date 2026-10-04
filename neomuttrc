@@ -58,6 +58,9 @@ set abort_nosubject=yes		# automatically abort messages with no subject
 # PGP/GPG encryption settings
 set crypt_verify_sig=yes
 set crypt_use_gpgme=yes		# PGP encryption
+set pgp_default_key="CAEEB377FC82BAF9102CD22FC5CED0031AA8E281"
+set pgp_self_encrypt=yes
+set pgp_use_gpg_agent=yes
 set crypt_auto_sign=yes		# sign messages by default
 set crypt_auto_encrypt=yes
 set crypt_auto_smime=yes
@@ -221,6 +224,15 @@ macro index,pager U "<set-flag>N" "mark current message as unread"
 # Custom key binding for 'F' key
 bind index,pager F forward-message	# forward message
 
+# WKD key lookup in compose mode
+macro index,pager,compose W "<shell-escape>read -p 'Enter email for WKD lookup: ' addr && echo \"Looking up key for \$addr...\" && gpg --locate-keys \$addr && echo \"Key lookup completed\"<enter>" "lookup recipient key via WKD"
+
+# WKD key lookup for sender's email
+macro index,pager w "<enter-command>set my_pipe_decode=\$pipe_decode pipe_decode<return><pipe-message>gpg --locate-keys \$(grep -i '^From:' | head -1 | sed -E 's/^From: *//; s/.*<(.*)>.*/\\1/; t; s/([^ ]+).*/\\1/')<return><enter-command>set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<return>" "lookup sender key via WKD"
+
+macro index \' "<enter-command>unset wait_key<enter><shell-escape>read -p 'Enter a search term to find with notmuch: ' x; echo \$x >~/.cache/mutt_terms<enter><limit>~i \"\`notmuch search --output=messages \$(cat ~/.cache/mutt_terms) | head -n 600 | perl -le '@a=<>;s/\^id:// for@a;$,=\"|\";print@a' | perl -le '@a=<>; chomp@a; s/\\+/\\\\+/ for@a;print@a' \`\"<enter>" "show only messages matching a notmuch pattern"
+
+
 # Custom key bindings for page navigation
 bind pager \Cf half-down		# Ctrl+f: page down without moving to next message
 bind pager \Cb half-up			# Ctrl+b: page up without moving to previous message
@@ -231,6 +243,7 @@ bind index,pager l sidebar-next
 bind index,pager H sidebar-prev-new
 bind index,pager L sidebar-next-new
 bind index,pager i sidebar-open
+bind index,pager I sidebar-open # convenience (don't have to let go of space)
 
 
 macro index <f2> '<sync-mailbox><enter-command>source ~/.config/neomutt/me<enter><change-folder>!<enter>'
