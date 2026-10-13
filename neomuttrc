@@ -39,7 +39,7 @@ set reply_to
 set reverse_name
 set nosave_empty
 set signature="~/.config/neomutt/sig"
-set sendmail="/usr/bin/msmtp"
+set sendmail="msmtp"
 # I subscribe to a lot of mailing lists, so this is _very_ useful.  This
 # groups messages on the same subject to make it easier to follow a
 # discussion.  NeoMutt will draw a nice tree showing how the discussion flows.
@@ -262,6 +262,9 @@ hdr_order date from subject to cc
 
 # Identify mailing lists I subscribe to - lists <list-name> [ <list-name> ... ]
 lists ^mutt-dev@mutt\\.org$ ^mutt-users@mutt\\.org$
+subscribe dev@suckless\\.org hackers@suckless\\.org musl@lists\\.openwall\\.com 9fans@9fans\\.topicbox\\.com busybox@busybox\\.net
+subscribe gforth@gnu\\.org skaware@list\\.skarnet\\.org sxmo-devel@lists\\.sr\\.ht aerc-devel@lists\\.sr\\.ht swig-user@lists\\.sourceforge\\.net
+subscribe sr\\.ht-discuss ecl-devel libreboot 9front-commits esperanto-informoj wiki@suckless\\.org
 
 # Automatically use entries from ~/.mailcap to view these MIME types - auto_view <type> [ <type> ... ]
 auto_view application/x-gunzip
@@ -269,3 +272,4 @@ auto_view application/x-gzip
 auto_view text/html		# automatically show html (mailcap uses w3m)
 auto_view application/pgp-encrypted
 alternative_order text/plain text/enriched text/html
+source ~/.config/neomutt/notmuch-lists
