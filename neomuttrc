@@ -3,6 +3,8 @@ folder-hook 'equwal.com' 'source ~/.config/neomutt/me'
 # folder-hook 'other-mailbox' 'source ~/.config/neomutt/other-mailbox'
 
 # Vim-like navigation for first/last entry
+bind generic g first-entry
+bind generic G last-entry
 bind index g first-entry
 bind index G last-entry
 bind pager g top
@@ -10,8 +12,6 @@ bind pager G bottom
 
 # Note: $folder should be set _before_ any other path vars where `+' or `='
 # is used because paths are expanded when parsed
-set debug_level = 2
-set debug_file = ~/.config/neomutt/neolog
 set folder="~/mail"
 set mbox_type=Maildir
 
@@ -28,8 +28,9 @@ set include
 set nomark_old
 set mail_check=60		# avoid IMAP lags
 set mime_forward=yes
-set move=yes
 set pager_index_lines=6
+set menu_scroll
+set attach_save_dir=~/Downloads
 set postponed=+postponed
 set print_command=/bin/false	# save trees
 set noprompt_after
@@ -43,7 +44,10 @@ set sendmail="msmtp"
 # I subscribe to a lot of mailing lists, so this is _very_ useful.  This
 # groups messages on the same subject to make it easier to follow a
 # discussion.  NeoMutt will draw a nice tree showing how the discussion flows.
-set sort='reverse-date'		# primary sorting method
+set sort=threads
+set sort_aux=reverse-last-date-received
+set strict_threads		# thread by References/In-Reply-To only, not by subject
+set uncollapse_jump		# jump to the first unread mail when a thread opens
 set sort_browser=reverse-date	# how to sort files in the dir browser
 set spoolfile=+/		# where my new mail is located
 set header_cache=~/.cache/mutt
@@ -74,7 +78,7 @@ set crypt_reply_sign_encrypted=yes
 set mailcap_path = ~/.config/neomutt/mailcap
 set date_format="%y/%m/%d %I:%M%p"
 set index_format="%2C %Z %?X?A& ? %D %-15.15F %s (%-4.4c)"
-set query_command = "mail-alias --query '%s'"
+set query_command = "printf '\\n'; notmuch address --output=sender --output=recipients --deduplicate=address -- 'from:%s* or to:%s*' | grep -iF -- '%s' | sed -E 's/^(.*) <(.+)>\$/\\2\\t\\1/; t; s/\$/\\t/'"
 set rfc2047_parameters = yes
 set sleep_time = 0		# Pause 0 seconds for informational messages
 set markers = no		# Disables the `+` displayed at line wraps
@@ -93,24 +97,12 @@ unignore	from: subject to cc mail-followup-to \
 		date x-mailer x-url # this shows how nicely wrap long lines
 
 # Color definitions
-color hdrdefault red default
-color quoted brightblue default
-color signature red default
-color indicator brightyellow red
-color error brightred default
-color status yellow blue
 color tree magenta default	# the thread tree in the index menu
-color tilde magenta default
-color message brightcyan default
-color markers brightcyan default
-color attachment brightmagenta default
-color search default green	# how to hilite search patterns in the pager
 color warning brightyellow default
 
 color header brightred default "^(From|Subject):"
 color body magenta default "(ftp|http|https)://[^ ]+"	# point out URLs
 color body magenta default "[-a-z_0-9.\+]+@[-a-z_0-9.]+"	# e-mail addresses
-color underline brightgreen default
 
 # attributes when using a mono terminal
 mono quoted bold
@@ -136,13 +128,11 @@ mono bold bold
 mono underline underline
 mono indicator reverse
 mono error bold
-color normal default default
 color indicator brightblack white
 color sidebar_highlight red default
 color sidebar_divider brightblack black
 color sidebar_flagged red black
 color sidebar_new green black
-color normal brightyellow default
 color error red default
 color tilde black default
 color message cyan default
@@ -192,24 +182,24 @@ set sidebar_visible = yes
 set sidebar_width = 20
 set sidebar_short_path = yes
 set sidebar_next_new_wrap = yes
+set sidebar_folder_indent = yes
+set mail_check_stats		# unread/total counts in the sidebar
 
 # Spam handling
 macro index,pager \; "<save-message>+Spam<Enter>"
 macro index,pager \: "<save-message>+INBOX<Enter>"
 
-bind pager G bottom	# just like vi and less
-
 # Custom key bindings for 'n' key
 bind index n display-message	# open current mail when in index view
 bind pager n next-page		# next page when reading a message
 
-# Custom key bindings for 'p' key  
+# Custom key bindings for 'p' key
 bind index p display-message	# open current mail when in index view
-macro pager p "<previous-page><top><previous-undeleted>" "previous page or previous message if at top"
+bind pager p previous-page
 # Custom key binding for 'o' key
 bind pager o view-attachments	# view attachments when reading a message
 # Custom key binding for 'O' key
-macro pager O "<pipe-entry>cat > /tmp/neomutt-html && $BROWSER /tmp/neomutt-html<enter>" "open HTML message in browser"
+macro pager O "<view-attachments><search>html<enter><view-mailcap><exit>" "open HTML part in browser"
 # Custom key binding for 'N' key
 macro index N "T.*<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "mark all messages as read"
 # Custom key binding for 'R' key  
@@ -223,19 +213,27 @@ macro index,pager u "<clear-flag>N" "mark current message as read"
 macro index,pager U "<set-flag>N" "mark current message as unread"
 # Custom key binding for 'F' key
 bind index,pager F forward-message	# forward message
+bind index,pager \el list-reply		# L is taken by the sidebar
+bind index,pager \ed undelete-message	# u/U are taken by read/unread
+
+# Threads
+bind index - collapse-thread
+bind index _ collapse-all
+bind index,pager \et entire-thread	# pull the whole notmuch thread into the index
 
 # WKD key lookup in compose mode
-macro index,pager,compose W "<shell-escape>read -p 'Enter email for WKD lookup: ' addr && echo \"Looking up key for \$addr...\" && gpg --locate-keys \$addr && echo \"Key lookup completed\"<enter>" "lookup recipient key via WKD"
+macro index,pager,compose W "<enter-command>set wait_key<enter><shell-escape>printf 'Email for WKD lookup: '; read -r addr && gpg --locate-keys \"\$addr\"<enter><enter-command>unset wait_key<enter>" "lookup recipient key via WKD"
 
 # WKD key lookup for sender's email
 macro index,pager w "<enter-command>set my_pipe_decode=\$pipe_decode pipe_decode<return><pipe-message>gpg --locate-keys \$(grep -i '^From:' | head -1 | sed -E 's/^From: *//; s/.*<(.*)>.*/\\1/; t; s/([^ ]+).*/\\1/')<return><enter-command>set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<return>" "lookup sender key via WKD"
 
-macro index \' "<enter-command>unset wait_key<enter><shell-escape>read -p 'Enter a search term to find with notmuch: ' x; echo \$x >~/.cache/mutt_terms<enter><limit>~i \"\`notmuch search --output=messages \$(cat ~/.cache/mutt_terms) | head -n 600 | perl -le '@a=<>;s/\^id:// for@a;$,=\"|\";print@a' | perl -le '@a=<>; chomp@a; s/\\+/\\\\+/ for@a;print@a' \`\"<enter>" "show only messages matching a notmuch pattern"
+bind index \' vfolder-from-query	# notmuch query over all mail, opened as a virtual folder
 
-
-# Custom key bindings for page navigation
-bind pager \Cf half-down		# Ctrl+f: page down without moving to next message
-bind pager \Cb half-up			# Ctrl+b: page up without moving to previous message
+# Page navigation, vim-style
+bind index,pager \Cd half-down
+bind index,pager \Cu half-up
+bind index,pager \Cf next-page
+bind index,pager \Cb previous-page
 
 # Sidebar key bindings
 bind index,pager h sidebar-prev
@@ -244,12 +242,16 @@ bind index,pager H sidebar-prev-new
 bind index,pager L sidebar-next-new
 bind index,pager i sidebar-open
 bind index,pager I sidebar-open # convenience (don't have to let go of space)
+bind index,pager B sidebar-toggle-visible
 
+# Address completion in To:/Cc: comes from notmuch (Tab); Ctrl-t completes aliases
+bind editor <Tab> complete-query
+bind editor \Ct complete
 
 macro index <f2> '<sync-mailbox><enter-command>source ~/.config/neomutt/me<enter><change-folder>!<enter>'
 macro index <f3> '<sync-mailbox><enter-command>source ~/.config/neomutt/gmail<enter><change-folder>!<enter>'
 
-macro index O "<shell-escape>mbsync me<enter>" "run mbsync"
+macro index O "<shell-escape>mbsync me && notmuch new<enter>" "fetch mail and index it"
 macro index A "<limit>all\n" "show all messages (undo limit)"
 
 # switch to default account on startup

@@ -1,5 +1,6 @@
 text/plain; $EDITOR %s ;
-text/html; setsid dbrowsel %s ;
+text/html; cp %s /tmp/neomutt-view.html && setsid $BROWSER /tmp/neomutt-view.html >/dev/null 2>&1 &; nametemplate=%s.html
+text/html; elinks -dump 1 -dump-charset utf-8 -force-html %s; nametemplate=%s.html; copiousoutput
 text/x-diff; $EDITOR %s ;
 image/*; sxiv %s ;
 video/*; setsid mpv --quiet %s &; copiousoutput
